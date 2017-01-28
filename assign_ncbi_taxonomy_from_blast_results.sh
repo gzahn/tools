@@ -1,13 +1,14 @@
 #!/bin/sh
-
-#this script takes the output of a blast search (e.g. the text file downloaded after blasting rep_set.fna to the NCBI server) and attaches the top blast hit along with the NCBI taxonomy lineage
+#author Geoff Zahn (geoff.gone@gmail.com)
+#this script takes the output of a blast search (e.g. the .txt file downloaded after blasting rep_set.fna to the NCBI server) and attaches the top blast hit along with the NCBI taxonomy lineage
+#This can be useful if you want to see whether your current database (UNITE, for example) is returning taxonomic assignments that are harmonious with the larger NCBI database, or to simply assign taxonomy to your OTUs using NCBI lineages
 #taxonomy lineage assignment is called using the entrez_qiime.py python script, for which you must specify an ABSOLUTE PATH as third input variable - this script can be found at: https://raw.githubusercontent.com/bakerccm/entrez_qiime/master/entrez_qiime.py
 
 
 #script usage> bash assign_ncbi_taxonomy_from_blast_results.sh blast_results_text_file	ABS/PATH/TO/NCBI/TAXONOMY/FILES/DIRECTORY/ ABS/PATH/TO/DRIECTORY/FOR/entrez_qiime.py
 
 
-#	If you do not already have a local copy of the NCBI's taxonomy data, you will need to download it. Download links are available from http://www.ncbi.nlm.nih.gov/guide/taxonomy/. The files can also be downloaded directly from the command line, e.g. using Terminal on a Mac:
+#	If you do not already have a local copy of the NCBI's taxonomy data, you will need to download it. Download links are available from http://www.ncbi.nlm.nih.gov/guide/taxonomy/. The files can also be downloaded directly from the command line:
 
 
     # approx 37MB
@@ -64,7 +65,7 @@ echo "Main output file is otu_to_ncbi_lineage.tsv - A tab-separated file listing
 
 #output files are:
 #					otu_to_ncbi_lineage.tsv		tab-separated file listing OTU_ID, NCBI_ACCESSION for top blast hit, NCBI_LINEAGE in QIIME-compatible format
-#					accession_list.log			notes and errors from entrez_qiime.py - This will list accession numbers that did not have associated TaxIDs available.  You will most likely need to fill these in by hand!
+#					entrez_qiime.log			notes and errors from entrez_qiime.py - This will list accession numbers that did not have associated TaxIDs available.  You will most likely need to fill these in by hand!
 #					otu_to_top_blast			tab-separated file listing OTU_ID, NCBI_ACCESSION for top blast hit, NCBI Name/Strain Info, BLAST Alignment Score, BLAST E-Value
 
 ##########################
