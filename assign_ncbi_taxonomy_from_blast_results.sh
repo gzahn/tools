@@ -19,14 +19,14 @@
 #    	ftp ftp://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/nucl_gb.accession2taxid.gz
 #		gunzip nucl_gb.accession2taxid.gz
 
-#by default, this is used for fungal assignments only, so uncultured and "Fungal sp." are removed prior to taxonomy assignment
+#QC, as far as removing uncultured or badly assigned reads, should be done as part of the BLAST search prior to running this script
 #absolute paths are required for entrez_qiime.py so they must be supplied
 
 #########################
 
 
 
-grep -v "Uncultured \|Fungal sp.\| Fungal endophyte" $1 > blast_no_uncultured_or_unknown.txt
+cat $1 > blast_no_uncultured_or_unknown.txt
 grep "Query= " blast_no_uncultured_or_unknown.txt | cut -d " " -f2 > query_names
 
 #in case removing "uncultured", and "endophytes" leaves you with no valid blast hits....
@@ -54,7 +54,7 @@ paste <(grep -v -Fwf otus_with_no_hits query_names) <(while read ID; do grep $ID
 
 #cleanup intermediate files
 mv accession_list.log entrez_qiime.log
-rm blast_no_uncultured_or_unknown.txt accession_list $1_accession_to_tax_lineage.txt query_names top_blast_hits $1_accession_to_ncbi_lineage.txt otus_with_no_hits sequential_hits
+#rm blast_no_uncultured_or_unknown.txt accession_list $1_accession_to_tax_lineage.txt query_names top_blast_hits $1_accession_to_ncbi_lineage.txt otus_with_no_hits sequential_hits
 
 
 cat ERRORS.txt
