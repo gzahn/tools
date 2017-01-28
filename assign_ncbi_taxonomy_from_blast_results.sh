@@ -27,7 +27,15 @@
 
 grep -v "Uncultured \|Fungal sp.\| Fungal endophyte" $1 > blast_no_uncultured_or_unknown.txt
 grep "Query= " blast_no_uncultured_or_unknown.txt | cut -d " " -f2 > query_names
-grep -A8 "Query= " blast_no_uncultured_or_unknown.txt | grep -v "Sequences producing \|Query= \|Length=\|Score"| sed '/^$/d' | sed '/^--/d' | sed 's/Cf. //' | sed 's/\[//' | sed 's/\]//' > top_blast_hits
+
+#in case removing "uncultured", and "endophytes" leaves you with no valid blast hits....
+grep -A8 -Fwf query_names blast_no_uncultured_or_unknown.txt | grep -v "Sequences producing \|Length=\|Score"| sed '/^$/d' | sed '/^--/d' > sequential_hits
+echo -e "These OTUs were not assigned to a top blast hit.  Consider loosening blast parameters (return 100 instead of 10 hits, for example, or do not filter uncultured hits from the result file).\nThese have been removed from the output file: otu_to_ncbi_lineage.tsv" >> ERRORS.txt
+
+awk '/Query=/{getline; print}' sequential_hits | grep "Query= " | cut -d " " -f2 > otus_with_no_hits
+awk '/Query=/{getline; print}' sequential_hits | grep "Query= " | cut -d " " -f2 >> ERRORS.txt
+
+grep -A8 -Fwf query_names blast_no_uncultured_or_unknown.txt | grep -v "Sequences producing \|Query= \|Length=\|Score"| sed '/^$/d' | sed '/^--/d' | sed 's/Cf. //' | sed 's/\[//' | sed 's/\]//' > top_blast_hits
 cut -d " "  -f1 top_blast_hits > accession_list
 
 #run entrez-qiime.py to get lineage from accession list
@@ -36,15 +44,21 @@ python $3/entrez_qiime.py -L $PWD/accession_list -n $2 -r kingdom,phylum,class,o
 #add QIIME format labels to each taxonomy level
 cat $PWD/$1_accession_to_tax_lineage.txt | sed 's/\t/\tk__/' | sed 's/;/+/'| sed 's/;/+/'| sed 's/;/+/'| sed 's/;/+/'| sed 's/;/+/'| sed 's/;/;s__/'| sed 's/+/;p__/'|sed 's/+/;c__/'| sed 's/+/;o__/'| sed 's/+/;f__/'| sed 's/+/;g__/' > $PWD/$1_accession_to_ncbi_lineage.txt
 
-paste query_names top_blast_hits > otu_to_top_blast
+paste <(grep -v -Fwf otus_with_no_hits query_names) top_blast_hits > otu_to_top_blast
 
 echo -e "OTU_ID\tNCBI_ACCESSION\tNCBI_LINEAGE" > otu_to_ncbi_lineage.tsv
-paste query_names <(while read ID; do grep $ID $1_accession_to_ncbi_lineage.txt; done < accession_list) >> otu_to_ncbi_lineage.tsv
+paste <(grep -v -Fwf otus_with_no_hits query_names) <(while read ID; do grep $ID $1_accession_to_ncbi_lineage.txt; done < accession_list) >> otu_to_ncbi_lineage.tsv
+
 
 
 #cleanup intermediate files
-rm blast_no_uncultured_or_unknown.txt accession_list $1_accession_to_tax_lineage.txt query_names top_blast_hits $1_accession_to_ncbi_lineage.txt
+mv accession_list.log entrez_qiime.log
+rm blast_no_uncultured_or_unknown.txt accession_list $1_accession_to_tax_lineage.txt query_names top_blast_hits $1_accession_to_ncbi_lineage.txt otus_with_no_hits sequential_hits
 
+
+cat ERRORS.txt
+echo "Process complete.  Check ERRORS.txt for OTUs that were not assigned a blast hit."
+echo "Main output file is otu_to_ncbi_lineage.tsv - A tab-separated file listing OTU_ID, NCBI_ACCESSION for top blast hit, and NCBI_LINEAGE in QIIME-compatible format"
 
 ##########################
 
