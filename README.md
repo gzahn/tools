@@ -11,3 +11,6 @@ Takes .txt formatted BLAST results from a fasta file and wraps entrez_qiime.py t
 This script assumes you have a local copy of NCBI taxonomy and entrez_qiime.py
 
 Usage: bash assign_taxonomy_from_blast_results.sh blast_results_text_file	ABS/PATH/TO/NCBI/TAXONOMY/FILES/DIRECTORY/ ABS/PATH/TO/DRIECTORY/FOR/entrez_qiime.py
+
+### make_qiime_database_from_fasta.sh
+Takes fasta file from NCBI search and creates a QIIME-compatible taxonomy database along with a sequence database that can be used to assign OTUs and taxonomy within QIIME.  This allows simple construction of custom databases based on edirect NCBI search results.
