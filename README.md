@@ -17,3 +17,7 @@ Takes fasta file from NCBI search and creates a QIIME-compatible taxonomy databa
 This script assumes you have a local copy of NCBI taxonomy and entrez_qiime.py
 
 Usage: bash make_qiime_database_from_fasta.sh /ABS/PATH/TO/INPUT_FASTA_FILE /ABS/PATH/TO/DIRECTORY/FOR/entrez_qiime.py /ABS/PATH/TO/NCBI/TAXONOMY/DIRECTORY/ 	/ABS/PATH/TO/OUTPUT/DIRECTORY/
+
+### SRA_Download_and_Process.sh
+Takes downloaded accession list and table from the Sequence Read Archive Read Selector Tool and automatically downloads the associated fastq files from those accessions.  It then removes low-quality reads, and generates a QIIME compatible concatenated fasta and valid mapping file, ready for OTU-Picking. This allows you to go straight from selecting projects of interest on SRA to picking OTUs in QIIME with any uploaded metadata.
+This script assumes local copies of QIIME, the fastx_toolkit, and sratools.
