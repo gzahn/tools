@@ -112,11 +112,6 @@ rm $4/DB_Names $4/DB_raw.fasta $4/Duplicated_fastas $4/Duplicated_IDs $4/IDs_in_
 
 cat $1.log
 
-
-
-###################
-
-
 grep "^>" $4/DB.fasta | sed 's/>//' >$4/good_acc_list
 
 echo "Cleaning Taxonomy to match Database...This may take some time."
@@ -134,7 +129,7 @@ sed -e '/^:/d' $4/Taxonomy_clean1.txt > $4/Taxonomy.txt
 
 echo "Final cleanup to remove bad accessions..."
 
-while read bad; do sed -i -e "/$bad/,+1d" $4/DB.fasta ; done < bad_acc_list
+while read bad; do echo "Removing $bad" ; sed -i -e "/$bad/,+1d" $4/DB.fasta ; done < bad_acc_list
 
 rm $4/Taxonomy_clean1.txt $4/Taxonomy_ordered.txt
 mv bad_acc_list bad_acc_list.txt
