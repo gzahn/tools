@@ -122,11 +122,24 @@ grep "^>" $4/DB.fasta | sed 's/>//' >$4/good_acc_list
 echo "Cleaning Taxonomy to match Database...This may take some time."
 
 while read ID ; do grep -m 1 $ID $4/Taxonomy.txt ; done < $4/good_acc_list > $4/Taxonomy_ordered.txt
-mv $4/Taxonomy_ordered.txt $4/Taxonomy.txt
-rm $4/good_acc_list
-#while read ID ; do grep -m 1 -A 1 "^>$ID" $4/DB.fasta ; done < $4/clean_tax_list > $4/DB_ordered.fasta
+#mv $4/Taxonomy_ordered.txt $4/Taxonomy.txt
+#rm $4/good_acc_list
+
+grep "k__NA;p__NA;c__NA;o__NA;f__NA;g__NA;s__NA\|^:" $4/Taxonomy_ordered.txt | cut -f1 > bad_acc_list
 
 
-echo -e "Process complete. Final database is DB_ordered.fasta, and associated taxonomy is Taxonomy_ordered.txt"
+
+sed -e '/k__NA;p__NA;c__NA;o__NA;f__NA;g__NA;s__NA/d' $4/Taxonomy_ordered.txt > $4/Taxonomy_clean1.txt
+sed -e '/^:/d' $4/Taxonomy_clean1.txt > $4/Taxonomy.txt
+
+echo "Final cleanup to remove bad accessions..."
+
+while read bad; do sed -i -e "/$bad/,+1d" $4/DB.fasta ; done < bad_acc_list
+
+rm $4/Taxonomy_clean1.txt $4/Taxonomy_ordered.txt
+mv bad_acc_list bad_acc_list.txt
+
+
+echo -e "Process complete. Final database is DB_ordered.fasta, and associated taxonomy is Taxonomy_ordered.txt\nAccessions that were removed are in bad_acc_list.txt"
 
 
