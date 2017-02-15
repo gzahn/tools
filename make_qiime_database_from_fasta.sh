@@ -1,6 +1,8 @@
 #!/bin/sh
 
 # this script takes a fasta file and creates a QIIME-compatible database for OTU-picking and taxonomic assignment
+# This script comes with no guarantees. Use at your own peril.
+
 
 # Usage: bash make_qiime_database_from_fasta.sh /ABS/PATH/TO/INPUT_FASTA_FILE /ABS/PATH/TO/DIRECTORY/FOR/entrez_qiime.py /ABS/PATH/TO/NCBI/TAXONOMY/DIRECTORY/ 	/ABS/PATH/TO/OUTPUT/DIRECTORY/
 
@@ -11,6 +13,7 @@
 # This script assumes you have a local copy of entrez_qiime.py on your machine, available here: https://raw.githubusercontent.com/bakerccm/entrez_qiime/master/entrez_qiime.py
 
 # This script also asumes you have a local copy of the NCBI taxonomy database on your machine, obtainable as follows:
+
 
 ### Download NCBI names and taxonomy information (check md5sums to ensure proper downloads) ###
 
@@ -98,6 +101,8 @@ cat $4/tidy.no_reps.fasta $4/add_back > $4/DB_raw.fasta
 
 ### Sort fasta database to same order as taxonomy map
 
+echo "Sorting Database...This will take some time."
+
 cut -f 1 $4/NCBI_QIIME_Taxonomy.txt > $4/IDs_in_order.txt
 while read ID ; do grep -m 1 -A 1 "^>$ID" $4/DB_raw.fasta ; done < $4/IDs_in_order.txt > $4/DB.fasta  #This will take quite a long time to run
 
@@ -108,6 +113,20 @@ rm $4/DB_Names $4/DB_raw.fasta $4/Duplicated_fastas $4/Duplicated_IDs $4/IDs_in_
 cat $1.log
 
 
-echo "Process complete. Database is DB.fasta, and associated taxonomy is Taxonomy.txt"
+
+###################
+
+
+grep "^>" $4/DB.fasta | sed 's/>//' >$4/good_acc_list
+
+echo "Cleaning Taxonomy to match Database...This may take some time."
+
+while read ID ; do grep -m 1 $ID $4/Taxonomy.txt ; done < $4/good_acc_list > $4/Taxonomy_ordered.txt
+mv $4/Taxonomy_ordered.txt $4/Taxonomy.txt
+rm $4/good_acc_list
+#while read ID ; do grep -m 1 -A 1 "^>$ID" $4/DB.fasta ; done < $4/clean_tax_list > $4/DB_ordered.fasta
+
+
+echo -e "Process complete. Final database is DB_ordered.fasta, and associated taxonomy is Taxonomy_ordered.txt"
 
 
