@@ -130,6 +130,12 @@ sed -e '/^:/d' $4/Taxonomy_clean1.txt > $4/Taxonomy.txt
 echo "Final cleanup to remove bad accessions..."
 
 while read bad; do echo "Removing $bad" ; sed -i -e "/$bad/,+1d" $4/DB.fasta ; done < bad_acc_list
+sed -i -e '/^>:/,+1d' $4/DB.fasta
+
+
+grep "^>" $4/DB.fasta | sed 's/>//' > $4/DB_IDs_ordered
+while read ID; do grep $ID $4/Taxonomy_ordered.txt ; done < $4/DB_IDs_ordered > Taxonomy_final.txt
+
 
 rm $4/Taxonomy_clean1.txt $4/Taxonomy_ordered.txt
 mv bad_acc_list bad_acc_list.txt
