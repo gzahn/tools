@@ -27,6 +27,12 @@
 # ftp ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz
 # tar -zxvf taxdump.tar.gz
 
+# I prefer wget since ftp did not work for me?
+# wget ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/nucl_gb.accession2taxid.gz
+# wget ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz
+# 
+
+
 #######################
 
 # If you don't have ENTREZ on your machine, install it as follows:
@@ -40,6 +46,8 @@
 #  '$ftp = new Net::FTP("ftp.ncbi.nlm.nih.gov", Passive => 1);
 #   $ftp->login; $ftp->binary;
 #   $ftp->get("/entrez/entrezdirect/edirect.zip");'
+# above can be easyily done with 
+# wget wget ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/edirect.zip
 #unzip -u -q edirect.zip
 #rm edirect.zip
 #export PATH=$PATH:$HOME/edirect
@@ -54,6 +62,8 @@
 
 # esearch -db nuccore -query "\"\(internal transcribed spacer 1\"[All Fields] AND \(300[SLEN] : 600[SLEN]\)\) NOT \"uncultured Neocallimastigales\"[porgn] NOT \"bacteria\"[Filter]" \| efetch -format fasta -mode text > ./Desktop/NCBI_ITS1_DB_raw.fasta
 
+# I think you escaped the pipe by accident?  Also not eveyone has ./Desktop
+# esearch -db nuccore -query "\"\(internal transcribed spacer 1\"[All Fields] AND \(300[SLEN] : 600[SLEN]\)\) NOT \"uncultured Neocallimastigales\"[porgn] NOT \"bacteria\"[Filter]" | efetch -format fasta -mode text > ~/NCBI_ITS1_DB_raw.fasta
 # this downloads fasta with ALL ncbi seqs of ITS1 between 300:600 bp, that aren't bacterial or "uncultured gut fungi" (416,912 sequences as of Dec 16, 2016) and saves them as s fasta text file 
 #depending on size of query results, this can take some time, so be careful about hangups and make sure your connection is good
 
